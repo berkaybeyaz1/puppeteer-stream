@@ -1,4 +1,4 @@
-import puppeteer, { LaunchOptions, Browser, Page, BrowserOptions, ChromeArgOptions } from "puppeteer";
+import puppeteer, { LaunchOptions, Browser, Page, BrowserOptions, ChromeArgOptions, Puppeteer } from "puppeteer";
 import { Readable, ReadableOptions } from "stream";
 import path from "path";
 
@@ -26,11 +26,13 @@ declare module "puppeteer" {
 	}
 }
 
-export async function launch(opts: LaunchOptions & BrowserOptions & ChromeArgOptions) {
+export async function launch(opts: LaunchOptions & BrowserOptions & ChromeArgOptions, puppeteerExternalInstance: Puppeteer) {
 	if (!opts) opts = {};
-
+	let puppeteerInstance;
+	if (!puppeteerExternalInstance) {
+		puppeteerInstance = puppeteer
+	}
 	if (!opts.args) opts.args = [];
-
 	const extensionPath = path.join(__dirname, "..", "extension");
 	const extensionId = "jjndjgheafjngoipoacpjgeicjeomjli";
 	let loadExtension = false;
@@ -60,7 +62,7 @@ export async function launch(opts: LaunchOptions & BrowserOptions & ChromeArgOpt
 
 	opts.headless = false;
 
-	const browser: Browser = await puppeteer.launch(opts);
+	const browser: Browser = await puppeteerInstance.launch(opts);
 	// @ts-ignore
 	browser.encoders = new Map();
 
